@@ -1,0 +1,13 @@
+{
+  "name": "orange-liberia-retailcode-regression",
+  "version": "1.0.0",
+  "private": true,
+  "description": "Newman regression suite for the RetailCode Orange Liberia API collection",
+  "scripts": {
+    "regression": "newman run \"RETAILCODE_ORANGE_LIBERIA.postman_collection.json\" -e \"Retailcode Orange Liberia Dev Copy.postman_environment.json\" --insecure --timeout-request 15000 --env-var \"token=$TOKEN\" --reporters cli,htmlextra,json --reporter-htmlextra-export reports/regression-report.html --reporter-htmlextra-title \"Orange Liberia RetailCode API Regression\" --reporter-htmlextra-darkTheme --reporter-json-export reports/run-result.json"
+  },
+  "devDependencies": {
+    "newman": "^6.2.2",
+    "newman-reporter-htmlextra": "^1.23.1"
+  }
+}

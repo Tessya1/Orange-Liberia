@@ -1,0 +1,52 @@
+name: Weekly API Regression
+
+on:
+  schedule:
+    # 10:00 every Wednesday, Liberia time (UTC+0, no DST)
+    - cron: "0 10 * * 3"
+  workflow_dispatch: {}
+
+permissions:
+  contents: write
+
+jobs:
+  regression:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+
+      - name: Install Newman and the HTML reporter
+        run: npm install --no-save newman newman-reporter-htmlextra
+
+      - name: Run API regression
+        env:
+          TOKEN: ${{ secrets.RETAILCODE_TOKEN }}
+        run: npm run regression
+
+      - name: Commit updated report
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git add reports/regression-report.html
+          git diff --cached --quiet || git commit -m "chore: update weekly API regression report"
+          git push
+
+      - name: Email regression report
+        uses: dawidd6/action-send-mail@v3
+        with:
+          server_address: smtp.gmail.com
+          server_port: 465
+          secure: true
+          username: ${{ secrets.SMTP_USERNAME }}
+          password: ${{ secrets.SMTP_PASSWORD }}
+          subject: "Weekly API Regression Report - RetailCode Orange Liberia"
+          to: stanislaus.odili@fbistech.com,diana.edeh@fbistech.com,oladimeji.ajayi@fbistech.com,osayuki.aganmwonyi@fbistech.com,gift.alabo@fbistech.com,eyitemi.abioritsegbemi@fbistech.com
+          from: RetailCode API Regression <${{ secrets.SMTP_USERNAME }}>
+          body: "Attached is this week's automated API regression report for the RetailCode Orange Liberia collection. See the attached HTML file for the full pass/fail breakdown."
+          attachments: reports/regression-report.html
