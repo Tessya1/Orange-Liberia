@@ -1,4 +1,6 @@
 node_modules/
 reports/run-result.json
+reports/email-summary.html
 *.log
 .env
+.claude/

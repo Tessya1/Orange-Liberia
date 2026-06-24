@@ -31,6 +31,9 @@ jobs:
           TOKEN: ${{ secrets.RETAILCODE_TOKEN }}
         run: npm run regression
 
+      - name: Build email summary
+        run: node scripts/build-email-summary.js
+
       - name: Commit updated report
         run: |
           git config user.name "github-actions[bot]"
@@ -50,7 +53,7 @@ jobs:
           subject: "Weekly API Regression Report - RetailCode Orange Liberia"
           to: stanislaus.odili@fbistech.com,diana.edeh@fbistech.com,oladimeji.ajayi@fbistech.com,osayuki.aganmwonyi@fbistech.com,gift.alabo@fbistech.com,eyitemi.abioritsegbemi@fbistech.com
           from: RetailCode API Regression <${{ secrets.SMTP_USERNAME }}>
-          body: "Attached is this week's automated API regression report for the RetailCode Orange Liberia collection. See the attached HTML file for the full pass/fail breakdown."
+          html_body: file://reports/email-summary.html
           attachments: reports/regression-report.html
 
       - name: Reflect regression result
