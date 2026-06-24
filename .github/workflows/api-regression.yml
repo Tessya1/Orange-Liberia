@@ -25,6 +25,8 @@ jobs:
         run: npm install --no-save newman newman-reporter-htmlextra
 
       - name: Run API regression
+        id: regression
+        continue-on-error: true
         env:
           TOKEN: ${{ secrets.RETAILCODE_TOKEN }}
         run: npm run regression
@@ -50,3 +52,9 @@ jobs:
           from: RetailCode API Regression <${{ secrets.SMTP_USERNAME }}>
           body: "Attached is this week's automated API regression report for the RetailCode Orange Liberia collection. See the attached HTML file for the full pass/fail breakdown."
           attachments: reports/regression-report.html
+
+      - name: Reflect regression result
+        if: steps.regression.outcome == 'failure'
+        run: |
+          echo "Regression had test failures - see the emailed/committed report for details."
+          exit 1
